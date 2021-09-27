@@ -47,6 +47,7 @@ import Foundation
     case gutenbergSuggestionSessionFinished
     case gutenbergEditorSettingsFetched
     case gutenbergEditorHelpShown
+    case gutenbergEditorBlockInserterClosed
 
     // Notifications Permissions
     case pushNotificationsPrimerSeen
@@ -256,6 +257,8 @@ import Foundation
             return "editor_settings_fetched"
         case .gutenbergEditorHelpShown:
             return "editor_help_shown"
+        case .gutenbergEditorBlockInserterClosed:
+            return "editor_block_inserter_closed"
         // Notifications permissions
         case .pushNotificationsPrimerSeen:
             return "notifications_primer_seen"

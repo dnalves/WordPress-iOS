@@ -1012,6 +1012,35 @@ extension GutenbergViewController: GutenbergBridgeDelegate {
     }
 
     func gutenbergDidRequestSetBlockTypeImpressions(_ impressions: [String: Int]) -> Void {
+        // TODO: Remove the following experimental analytic track call, it should not be shipped
+        //
+        // The following showcases tracking an event originating from the block editor. While it
+        // does not set the event name via data from JavaScript, it does set event properties.
+        // The former would be just as easy with a switch statement on an event name passed from
+        // JavaScript.
+        let hasNewBlockTypes = impressions.reduce(false, { acc, obj in
+            return acc || obj.value > 0
+        })
+        WPAnalytics.track(.gutenbergEditorBlockInserterClosed, properties: ["has_new_block_types": hasNewBlockTypes])
+        // Currently, the usage of the raw value shorthand syntax prohibits us from
+        // associating values when declaring the `WPAnalyticsEvent`, e.g.
+        //
+        // `WPAnalytics.track(.gutenbergEditorEvent("block_inserter_closed"))`
+        //
+        // We could refactor away the shorthand syntax to support both associated values
+        // and raw values (https://stackoverflow.com/a/45954779/378228), but this may be
+        // a larger undertaking.
+        //
+        // A smaller improvement would be initializing `WPAnalyticsEvent` with a raw value,
+        // however, the current implementation uses a raw value of `Int` (https://git.io/JzdlY),
+        // which prohibits us from initializing with a string value passed from JavaScript, e.g.
+        //
+        // `WPAnalytics.track(WPAnalyticsEvent(rawValue: "editor_block_inserter_closed"))`
+        //
+        // Additionally, the current "raw value" implementation does not rely upon the actual
+        // `rawValue`, but a `value` field (https://git.io/JzdlC). It is unclear why this
+        // is the case, possibly language limitations at the time of its authoring. We may
+        // need to refactor this portion to simplify event creation from the block editor.
         gutenbergSettings.blockTypeImpressions = impressions
     }
 }
