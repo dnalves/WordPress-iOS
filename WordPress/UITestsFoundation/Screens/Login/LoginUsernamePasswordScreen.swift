@@ -1,3 +1,4 @@
+import ScreenObject
 import XCTest
 import XCUITestHelpers
 
@@ -16,18 +17,33 @@ private struct ElementStringIDs {
     static let nextButton = "Continue Button"
 }
 
-public class LoginUsernamePasswordScreen: BaseScreen {
-    let usernameTextField: XCUIElement
-    let passwordTextField: XCUIElement
-    let nextButton: XCUIElement
+public class LoginUsernamePasswordScreen: ScreenObject {
 
-    init() {
-        let app = XCUIApplication()
-        usernameTextField = app.textFields[ElementStringIDs.usernameTextField]
-        passwordTextField = app.secureTextFields[ElementStringIDs.passwordTextField]
-        nextButton = app.buttons[ElementStringIDs.nextButton]
+    let usernameTextFieldGetter: (XCUIApplication) -> XCUIElement = {
+        $0.textFields[ElementStringIDs.usernameTextField]
+    }
 
-        super.init(element: passwordTextField)
+    let passwordTextFieldGetter: (XCUIApplication) -> XCUIElement = {
+        $0.secureTextFields[ElementStringIDs.passwordTextField]
+    }
+
+    let nextButtonGetter: (XCUIApplication) -> XCUIElement = {
+        $0.buttons[ElementStringIDs.nextButton]
+    }
+
+    var usernameTextField: XCUIElement { usernameTextFieldGetter(app) }
+    var passwordTextField: XCUIElement { passwordTextFieldGetter(app) }
+    var nextButton: XCUIElement { nextButtonGetter(app) }
+
+    init(app: XCUIApplication = XCUIApplication()) throws {
+        try super.init(
+            expectedElementGetters: [
+                usernameTextFieldGetter,
+                passwordTextFieldGetter,
+                nextButtonGetter
+            ],
+            app: app
+        )
     }
 
     public func proceedWith(username: String, password: String) -> LoginEpilogueScreen {
@@ -47,6 +63,6 @@ public class LoginUsernamePasswordScreen: BaseScreen {
     }
 
     public static func isLoaded() -> Bool {
-        return XCUIApplication().buttons[ElementStringIDs.nextButton].exists
+        (try? LoginUsernamePasswordScreen().isLoaded) ?? false
     }
 }
