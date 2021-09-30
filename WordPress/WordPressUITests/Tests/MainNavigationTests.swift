@@ -22,7 +22,7 @@ class MainNavigationTests: XCTestCase {
         XCTAssert(MySiteScreen.isLoaded(), "MySitesScreen screen isn't loaded.")
 
         _ = mySiteScreen
-            .tabBar.gotoReaderScreen()
+            .tabBar.goToReaderScreen()
 
         XCTAssert(ReaderScreen.isLoaded(), "Reader screen isn't loaded.")
 
